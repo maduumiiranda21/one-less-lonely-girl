@@ -146,6 +146,7 @@ body{
     line-height:1.9;
     margin-bottom:25px;
     position: relative;
+    will-change: scroll-position;
 }
 
 .lyrics::-webkit-scrollbar{
@@ -256,56 +257,99 @@ body{
     50%{ opacity:1; }
 }
 
-/* ADAPTAÇÃO MOBILE AUTOMÁTICA */
+/* ==========================================
+   MELHORIAS EXCLUSIVAS PARA ULTRA-RESPONSIVIDADE MOBILE
+   ========================================== */
 @media (max-width: 480px) {
     body {
         height: auto;
         min-height: 100vh;
         overflow-y: auto;
-        padding: 20px 0;
+        padding: 15px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
+    
     .music-card {
-        padding: 20px 15px;
-        border-radius: 20px;
+        position: relative;
+        left: 0;
+        top: 0;
+        transform: none !important;
+        padding: 22px 16px;
+        border-radius: 24px;
         width: 92%;
+        margin: auto;
     }
+    
     .cover {
-        width: 140px;
-        height: 140px;
-        margin-bottom: 12px;
+        width: 130px;
+        height: 130px;
+        margin-bottom: 10px;
+        border-radius: 16px;
     }
+    
     .song-title {
-        font-size: 2.2rem;
+        font-size: 2.1rem;
+        text-align: center;
     }
+    
     .artist {
-        font-size: 0.9rem;
-        margin-bottom: 15px;
-        letter-spacing: 2px;
+        font-size: 0.85rem;
+        margin-top: 4px;
+        margin-bottom: 12px;
+        letter-spacing: 1.5px;
     }
+    
     .tabs-container {
-        gap: 10px;
+        gap: 8px;
         margin-bottom: 12px;
     }
+    
     .tab-btn {
-        padding: 6px 16px;
-        font-size: 0.8rem;
+        padding: 6px 14px;
+        font-size: 0.75rem;
+        border-radius: 15px;
+    }
+    
+    .lyrics {
+        height: 190px;
+        padding: 10px 12px;
+        margin-bottom: 15px;
+    }
+    
+    /* Esconde a barra de rolagem nativa no mobile para um visual clean */
+    .lyrics::-webkit-scrollbar {
+        display: none;
     }
     .lyrics {
-        height: 220px;
-        padding: 15px;
-        margin-bottom: 15px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
+    
     .line {
         font-size: 0.95rem;
-        min-height: 38px;
+        min-height: 36px;
+        line-height: 1.4;
     }
+    
     .line.active {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
     }
+    
+    .player {
+        gap: 8px;
+    }
+    
     #playBtn {
-        width: 50px;
-        height: 50px;
-        font-size: 18px;
+        width: 46px;
+        height: 46px;
+        font-size: 16px;
+    }
+    
+    .time {
+        font-size: 0.8rem;
+        min-width: 32px;
     }
 }
 </style>
@@ -314,14 +358,12 @@ body{
 
 <div class="blur-bg"></div>
 
-<!-- NOTAS MUSICAIS -->
 <div class="note" style="left:7%;animation-duration:12s;">🎵</div>
 <div class="note" style="left:22%;animation-duration:15s;">🎶</div>
 <div class="note" style="left:42%;animation-duration:13s;">🎧</div>
 <div class="note" style="left:73%;animation-duration:16s;">🎤</div>
 <div class="note" style="left:88%;animation-duration:14s;">🎵</div>
 
-<!-- CARD -->
 <div class="music-card">
 
     <img src="arquivos/justin.jpeg" class="cover">
@@ -506,8 +548,14 @@ audio.addEventListener("timeupdate",()=>{
                 currentLine = i;
                 lines.forEach(line => line.classList.remove("active"));
                 lines[i].classList.add("active");
+                
+                // CÁLCULO DE CENTRALIZAÇÃO VERTICAL DA LETRA
+                const boxHeight = lyricsBox.clientHeight;
+                const lineTop = lines[i].offsetTop;
+                const lineHeight = lines[i].clientHeight;
+                
                 lyricsBox.scrollTo({
-                    top: lines[i].offsetTop - 110,
+                    top: lineTop - (boxHeight / 2) + (lineHeight / 2),
                     behavior: "smooth"
                 });
             }
@@ -518,7 +566,13 @@ audio.addEventListener("timeupdate",()=>{
 
 function resyncScroll() {
     if (currentLine !== -1) {
-        lyricsBox.scrollTo({ top: lines[currentLine].offsetTop - 110, behavior: "auto" });
+        const boxHeight = lyricsBox.clientHeight;
+        const lineTop = lines[currentLine].offsetTop;
+        const lineHeight = lines[currentLine].clientHeight;
+        lyricsBox.scrollTo({ 
+            top: lineTop - (boxHeight / 2) + (lineHeight / 2), 
+            behavior: "auto" 
+        });
     }
 }
 
